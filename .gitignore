@@ -1,0 +1,10 @@
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+terraform.tfstate
+terraform.tfstate.backup
+.learningsteps_key
+.learningsteps_key.pub
+__pycache__/
+*.pyc
+.claude/

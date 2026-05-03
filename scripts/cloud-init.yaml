@@ -1,0 +1,37 @@
+#cloud-config
+
+packages:
+  - python3
+  - python3-pip
+  - python3-venv
+  - git
+  - postgresql-client
+
+write_files:
+  - path: /etc/systemd/system/learningsteps.service
+    content: |
+      [Unit]
+      Description=LearningSteps API
+      After=network.target
+
+      [Service]
+      Type=simple
+      WorkingDirectory=/opt/learningsteps/api
+      Environment=DATABASE_URL=${database_url}
+      ExecStart=/opt/learningsteps/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=multi-user.target
+
+runcmd:
+  - git clone https://github.com/CyberstepsDE/learningsteps.git /opt/learningsteps
+  - python3 -m venv /opt/learningsteps/venv
+  - /opt/learningsteps/venv/bin/pip install --upgrade pip
+  - /opt/learningsteps/venv/bin/pip install -r /opt/learningsteps/api/requirements.txt
+  - until psql "${database_url}" -c '\q' 2>/dev/null; do sleep 5; done
+  - psql "${database_url}" -f /opt/learningsteps/database_setup.sql
+  - systemctl daemon-reload
+  - systemctl enable learningsteps
+  - systemctl start learningsteps

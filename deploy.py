@@ -258,11 +258,22 @@ def check_azure_resources(rg, db_fqdn):
         fail(f"VM power state: {power}")
 
     db_server = db_fqdn.split(".")[0]
-    db_state = run_out(["az", "postgres", "flexible-server", "show",
-                        "--resource-group", rg, "--name", db_server,
-                        "--query", "state", "-o", "tsv"])
+    try:
+        db_state = run_out(["az", "postgres", "flexible-server", "show",
+                            "--resource-group", rg, "--name", db_server,
+                            "--query", "state", "-o", "tsv"])
+    except subprocess.CalledProcessError as exc:
+        stderr = getattr(exc, "stderr", "") or ""
+        if "ServerStoppedError" in stderr or "Stopped" in stderr:
+            warn(f"PostgreSQL '{db_server}' is stopped. Start the server and retry checks.")
+            return
+        fail(f"Failed to query PostgreSQL server state: {stderr.strip() or exc}")
+        return
+
     if db_state == "Ready":
         ok(f"PostgreSQL '{db_server}' ready")
+    elif db_state == "Stopped":
+        warn(f"PostgreSQL '{db_server}' is stopped. Start the server and retry checks.")
     else:
         fail(f"PostgreSQL state: {db_state}")
 

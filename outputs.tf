@@ -15,7 +15,7 @@ output "app_url" {
 
 output "npmplus_admin_tunnel_command" {
   description = "NPMplus admin GUI (port 81) is intentionally NOT exposed via NSG — same lockdown principle as Day 1 SSH. Use an SSH tunnel."
-  value       = "ssh -i ${"~/.learningsteps_key"} -L 8081:localhost:81 ${var.vm_admin_username}@${azurerm_public_ip.vm.ip_address}   # then browse https://localhost:8081"
+  value       = "ssh -i .learningsteps_key -L 8081:localhost:81 ${var.vm_admin_username}@${azurerm_public_ip.vm.ip_address}   # then browse https://localhost:8081"
 }
 
 output "postgresql_fqdn" {

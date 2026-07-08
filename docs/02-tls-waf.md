@@ -193,7 +193,7 @@ No visible `403 Forbidden` block was returned during these tests.
 
 Evidence:
 
-![WAF test requests](../images/02-tls-waf/11-waf-test-requests.png)
+![WAF test requests](../images/02-tls-waf/11-waf-test-requests-and-alerts.png)
 
 CrowdSec showed:
 
@@ -227,3 +227,4 @@ The WAF test result is documented honestly:
 ```text
 CrowdSec/AppSec collections are enabled, but the sample requests did not trigger visible blocking, active alerts, or active decisions during this test.
 ```
+

@@ -6,6 +6,32 @@ For the 5-day walkthrough built on top of this deployment, see [handbook.md](han
 
 > **This deployment is intentionally minimal and unsecured.** The VM is publicly reachable, the database accepts connections from any IP, credentials are stored in plaintext, and there is no traffic inspection or monitoring. It is a starting point — not a production setup.
 
+
+## Project Documentation
+
+This repository documents the LearningSteps lockdown project from insecure baseline to monitored and automated response.
+
+| Part | Documentation | Focus |
+|---|---|---|
+| 00 | [Baseline Setup](docs/00-baseline-setup.md) | Deployment, runtime checks, and documentation structure. |
+| 01 | [Management Access](docs/01-management-access.md) | SSH restriction and Azure/Entra based VM login. |
+| 02 | [TLS and WAF Setup](docs/02-tls-waf.md) | NPMplus reverse proxy, HTTPS/TLS, and CrowdSec/AppSec check. |
+| 03 | [Identity Access](docs/03-identity-access.md) | oauth2-proxy with Microsoft Entra ID authentication. |
+| 04 | [Data Isolation](docs/04-data-isolation.md) | Private PostgreSQL networking with backup and restore verification. |
+| 05 | [Monitoring and Response](docs/05-monitoring-response.md) | WAF blocking, Log Analytics, Sentinel incident, and automated NSG response. |
+
+### Final Security Flow
+
+```text
+HTTPS/TLS -> NPMplus -> oauth2-proxy / Entra ID -> FastAPI -> Private PostgreSQL
+                         |
+                         +-> CrowdSec AppSec / WAF -> nginx logs -> Syslog -> Log Analytics -> Sentinel -> NSG auto-block
+```
+
+### Evidence Standard
+
+Every part is documented with command output and screenshot evidence in the `images/` folder. Sensitive values such as SSH keys, Terraform state, passwords, client secrets, and CrowdSec bouncer API keys must never be committed.
+
 ## What Gets Deployed
 
 - **Ubuntu VM** (Standard_D2s_v3) running the FastAPI application on port 8000
@@ -116,4 +142,5 @@ The SSH key is generated in the project folder during deployment:
 ```bash
 ssh azureuser@<vm-ip> -i .learningsteps_key
 ```
+
 
